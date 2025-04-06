@@ -29,6 +29,9 @@ function setup()
     -- Button to assign the selected color to the active shape
     parameter.action("Assign Color", assignColor)
     
+    -- Button to reset colors on the shapes
+    parameter.action("Reset Colors", function() shapeColors = {} end)
+    
     -- Create the shapes
     createShapes()
     
