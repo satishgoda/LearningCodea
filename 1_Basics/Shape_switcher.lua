@@ -3,7 +3,7 @@ function setup()
     -- Create a new 3D scene
     scene = craft.scene()
     
-    -- Position the camera to view the shapes
+    -- Position the camera behind the shapes to view them
     scene.camera.position = vec3(0, 0, -5)
     
     -- Add a directional light to illuminate the scene
@@ -11,17 +11,26 @@ function setup()
     light:add(craft.light, DIRECTIONAL)
     light.rotation = quat.eulerAngles(45, 45, 0) -- Point the light downwards at an angle
     
-    -- Parameter to switch between shapes (1 = cube, 2 = sphere, 3 = small cube)
-    parameter.integer("Shape", 1, 3, 2)
-    
-    -- Parameter to change the color of the active shape
-    parameter.color("Color", color(255, 255, 255, 255)) -- Default is white
-    
     -- Paramter to change the distance of the camera
     parameter.integer("CameraDistance", 1, 3, 1)
     
+    -- Default color for all shapes
+    defaultColor = color(255, 255, 255, 255) -- White
+    
+    -- Parameter to switch between shapes (1 = cube, 2 = sphere, 3 = small cube)
+    parameter.integer("Shape", 1, 3, 1)
+    
+    -- Parameter to select a color
+    parameter.color("SelectedColor", defaultColor)
+    
+    -- Button to assign the selected color to the active shape
+    parameter.action("Assign Color", assignColor)
+    
     -- Create the shapes
     createShapes()
+    
+    -- Initialize an empty table for color assignments
+    shapeColors = {}
 end
 
 -- Function to create the three shapes
@@ -53,6 +62,16 @@ function createShapes()
     table.insert(shapes, smallCube)
 end
 
+-- Function to assign the selected color to the active shape
+function assignColor()
+    if Shape >= 1 and Shape <= 3 then
+        -- Assign the selected color to the current shape in the table
+        shapeColors[Shape] = SelectedColor
+        -- Update the active shape's color immediately
+        shapes[Shape]:get(craft.renderer).material.diffuse = SelectedColor
+    end
+end
+
 -- Called every frame to update and render the scene
 function draw()
     -- Update the scene with the time since the last frame
@@ -64,16 +83,18 @@ function draw()
     -- Render the scene
     scene:draw()
     
+    -- Adjust the camera
+    scene.camera.position = vec3(0, 0, -5*CameraDistance)
+    
     -- Show only the active shape and set its color
     for i, shape in ipairs(shapes) do
         if i == Shape then
             shape.active = true
-            shape:get(craft.renderer).material.diffuse = Color
+            -- Use the assigned color if it exists in the table, otherwise use default
+            local currentColor = shapeColors[i] or defaultColor
+            shape:get(craft.renderer).material.diffuse = currentColor
         else
             shape.active = false
         end
     end
-    
-    -- Adjust the camera
-    scene.camera.position = vec3(0, 0, -5*CameraDistance)
 end
