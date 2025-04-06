@@ -19,7 +19,10 @@ function setup()
     
     -- Parameter to switch between shapes (1 = cube, 2 = sphere, 3 = small cube)
     parameter.integer("Shape", 1, 3, 1)
-    
+
+    -- Rotate the shapes
+    parameter.number("Rotation", 0, 360, 0)
+        
     -- Parameter to select a color
     parameter.color("SelectedColor", defaultColor)
     
@@ -91,8 +94,11 @@ function draw()
         if i == Shape then
             shape.active = true
             -- Use the assigned color if it exists in the table, otherwise use default
-            local currentColor = shapeColors[i] or defaultColor
+            local currentColor = shapeColors[i] or SelectedColor
             shape:get(craft.renderer).material.diffuse = currentColor
+            
+            -- Rotation of the shape
+            shape.rotation = quat.eulerAngles(0, Rotation, 0)
         else
             shape.active = false
         end
