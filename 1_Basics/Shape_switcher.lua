@@ -4,7 +4,7 @@ function setup()
     scene = craft.scene()
     
     -- Position the camera to view the shapes
-    scene.camera.position = vec3(0, 0, -15)
+    scene.camera.position = vec3(0, 0, -5)
     
     -- Add a directional light to illuminate the scene
     local light = scene:entity()
@@ -12,10 +12,13 @@ function setup()
     light.rotation = quat.eulerAngles(45, 45, 0) -- Point the light downwards at an angle
     
     -- Parameter to switch between shapes (1 = cube, 2 = sphere, 3 = small cube)
-    parameter.integer("Shape", 1, 3, 1)
+    parameter.integer("Shape", 1, 3, 2)
     
     -- Parameter to change the color of the active shape
     parameter.color("Color", color(255, 255, 255, 255)) -- Default is white
+    
+    -- Paramter to change the distance of the camera
+    parameter.integer("CameraDistance", 1, 3, 1)
     
     -- Create the shapes
     createShapes()
@@ -70,4 +73,7 @@ function draw()
             shape.active = false
         end
     end
+    
+    -- Adjust the camera
+    scene.camera.position = vec3(0, 0, -5*CameraDistance)
 end
